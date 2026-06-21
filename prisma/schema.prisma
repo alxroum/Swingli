@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  rounds       Round[]
+}
+
+model Course {
+  id    String  @id @default(cuid())
+  name  String
+  city  String?
+  state String?
+  par   Int
+  rounds Round[]
+}
+
+model Round {
+  id         String    @id @default(cuid())
+  user       User      @relation(fields: [userId], references: [id])
+  userId     String
+  course     Course?   @relation(fields: [courseId], references: [id])
+  courseId   String?
+  roundDate  DateTime
+  teeBox     String?
+  weather    String?
+  notes      String?
+  totalScore Int?
+  holeStats  HoleStat[]
+}
+
+model HoleStat {
+  id         String @id @default(cuid())
+  round      Round  @relation(fields: [roundId], references: [id])
+  roundId    String
+  holeNumber Int
+  par        Int
+  score      Int
+  fairwayHit Boolean
+  gir        Boolean
+  putts      Int
+  penalties  Int
+  notes      String?
+}
